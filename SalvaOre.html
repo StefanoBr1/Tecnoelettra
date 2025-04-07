@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Pagine</title>
+    <style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    text-align: center;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 0px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; /* Permette lo scrolling orizzontale se necessario */
+    display: flex; 
+    align-items: center;
+    
+}
+
+table {
+    width: 100%;
+    max-width: 100%; /* Impedisce alla tabella di sforare */
+    border-collapse: collapse;
+    margin-top: 0px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+}
+
+th, td {
+    padding: 2px;
+    text-align: center;
+    border-bottom: 0px solid #ddd;
+}
+
+/* Colori alternati per le righe */
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Stile per le intestazioni */
+th {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+/* Input */
+input {
+    font-family: monospace;
+    width: 100%;
+    max-width: 600px;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+}
+
+/* Stile textarea */
+#myTextarea {
+        font-family: monospace;
+        width: 100%;
+        border: 1px solid #ccc;
+        padding: 8px;
+        font-size: 14px;
+        overflow: hidden;
+        resize: none; /* Evita il ridimensionamento manuale */
+        min-height: 20px;
+    }
+
+/* Bottoni */
+button {
+    width: auto;
+    /*min-width: 100px;*/
+    max-width: 250px; /* Impedisce ai pulsanti di essere troppo larghi */
+    font-size: 16px;
+    padding: 10px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: #0056b3;
+}
+#User {
+        width: 100%;
+        border: none;
+        background: transparent;
+        font-size: 16px;
+        font-weight: bold;
+        color: black;
+        pointer-events: none;
+        outline: none}
+
+    th, td {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    input {
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+
+/* Nasconde gli elementi con classe hidden */
+.hidden { display: none; }
+/*.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    padding: 0px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;  Assicura che rimanga sopra il resto 
+}*/
+body {
+    padding-top: 0px; /* Per evitare che il contenuto venga coperto dalla barra */
+}
+
+/* HEADER */
+#appHeader {
+    background: #f8f9fa;
+    padding: 10px 20px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    box-sizing: border-box; /* Aggiunto per evitare overflow */
+}
+
+/* Barra superiore (top-bar) */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Aggiungi questo per gestire la larghezza della barra */
+    padding-bottom: 5px; /* Ridurre lo spazio sotto la top-bar */
+}
+
+#User {
+    font-weight: bold;
+    font-size: 20px; /* Aumenta la dimensione del testo per l'utente */
+    user-select: none;
+}
+
+/* Bottoni di logout */
+#logoutBtn {
+    background: rgb(95, 95, 95);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px; /* Ridurre la dimensione del bottone logout */
+}
+
+/* Sezione navigazione */
+.nav-buttons {
+    display: flex;
+    justify-content: space-between; /* Assicura che i pulsanti stiano sulla stessa riga */
+    gap: 10px; /* Aggiungi un piccolo gap tra i pulsanti */
+    margin-top: 5px;
+    width: 100%; /* Assicura che prenda tutta la larghezza disponibile */
+    box-sizing: border-box;
+}
+
+.nav-buttons button {
+    padding: 8px 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    flex: 1;
+    border-radius: 5px;
+    margin: 0 5px; /* Piccolo margine per distanziare i pulsanti */
+}
+
+/* Bottoni disabilitati */
+.nav-buttons button {
+    background: #6c757d;
+    color: white;
+}
+/*#salvaOreBtn {
+    background: #007bff;
+    color: white;
+}
+
+ Bottoni disabilitati 
+.nav-buttons button:not(#salvaOreBtn) {
+    background: #6c757d;
+    color: white;
+}*/
+
+/* Ottimizzazione per schermi mobili */
+@media screen and (max-width: 768px) {
+    #appHeader {
+        padding: 10px 15px; /* Ridurre il padding per mobile */
+    }
+
+    .top-bar {
+        padding-bottom: 0px; /* Ridurre lo spazio sotto la top-bar su mobile */
+    }
+
+    .nav-buttons {
+        flex-wrap: nowrap; /* I pulsanti rimangono sulla stessa riga */
+    }
+
+    .nav-buttons button {
+        width: auto; /* Evitare che i pulsanti si espandano a tutta larghezza */
+        flex: 1 1 45%; /* Permettere che i pulsanti siano più compatti su mobile */
+    }
+}
+
+
+        /* CONTENUTO PRINCIPALE */
+        main {
+            padding: 20px;
+        }
+
+        .container {
+    max-width: 900px;
+    margin: auto;
+    padding: 0px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; /* Permette lo scrolling orizzontale se necessario */
+    display: flex; 
+    align-items: center;
+    
+}
+
+/* Contenitore principale */
+#divDataIns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 5px; /* Spazio ridotto tra gli elementi */
+    box-sizing: border-box;
+    flex-wrap: nowrap; /* Forza tutti gli elementi a stare sulla stessa riga */
+}
+
+/* Etichetta "Data" */
+#divDataIns label {
+    font-size: x-large;
+    flex: 0 0 auto; /* Larghezza minima necessaria per non schiacciarsi */
+    white-space: nowrap; /* Evita il testo a capo */
+}
+
+/* Campo input Data */
+#data {
+    font-size: large;
+    flex: 1; /* Occupa lo spazio rimanente in modo bilanciato */
+    min-width: 120px; /* Impedisce che diventi troppo stretto */
+    max-width: 180px; /* Evita che si allarghi troppo */
+    box-sizing: border-box;
+}
+
+/* Pulsante "Salva" */
+#salvaBtn {
+    font-size: x-large;
+    flex: 0 0 auto; /* Mantiene una dimensione fissa */
+    min-width: 80px; /* Assicura che sia sempre visibile */
+    padding: 8px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Risoluzione perfetta per schermi piccoli */
+@media screen and (max-width: 480px) {
+    #divDataIns {
+        font-size: large;
+        gap: 3px; /* Riduce lo spazio tra gli elementi per adattarsi meglio */
+    }
+
+    #data {
+        font-size: medium;
+        min-width: 100px;
+        max-width: 180px;
+    }
+
+    #salvaBtn {
+        font-size: large;
+        min-width: 80px;
+        padding: 6px 2px;
+    }
+}
+
+
+.commessa-container {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Layout per le righe */
+.commessa-riga {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Stile per ogni colonna */
+.commessa-col {
+    flex: 1;
+    text-align: center;
+    font-weight: bold;
+}
+
+.commessa-col input {
+    width: 100%;
+    padding: 6px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Sezione Lavoro Svolto */
+.commessa-lavoro {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.commessa-lavoro label {
+    font-weight: bold;
+}
+
+.commessa-lavoro textarea {
+    width: 100%;
+    height: 80px;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Mobile: ridimensionamento intelligente */
+@media screen and (max-width: 600px) {
+    .commessa-riga {
+        flex-direction: row; /* Mantiene tutto su una riga */
+    }
+
+    .commessa-col {
+        flex: 1 1 30%; /* Distribuisce equamente gli elementi */
+    }
+}
+
+/* Stile per il contenitore della commessa */
+.report-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f4f4f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Stile per ogni riga */
+.report-row {
+    display: flex;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+/* Stile per ogni colonna */
+.report-column {
+    flex: 1;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+.report-column:last-child {
+    margin-right: 0;
+}
+
+input, textarea {
+    width: 100%;
+    font-size: large;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+textarea {
+    height: 100px; /* Impostato per adattarsi alla dimensione */
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#myTextarea {
+        font-family: monospace;
+        width: 100%;
+        border: 1px solid #ccc;
+        padding: 8px;
+        font-size: 14px;
+        overflow: hidden;
+        resize: none; /* Evita il ridimensionamento manuale */
+        min-height: 20px;
+    }
+
+/* Contenitore principale */
+#retConfBtn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 5px; /* Spazio ridotto tra gli elementi */
+    box-sizing: border-box;
+    flex-wrap: nowrap; /* Forza tutti gli elementi a stare sulla stessa riga */
+}
+
+/* Pulsante "Salva" */
+#confirmBtn {
+    
+    background-color: #55e255;
+    color: white;
+    
+}
+
+/* Risoluzione perfetta per schermi piccoli */
+@media screen and (max-width: 480px) {
+    #retConfBtn {
+        font-size: large;
+        gap: 3px; /* Riduce lo spazio tra gli elementi per adattarsi meglio */
+    }
+
+}
+/* Contenitore principale */
+#divDataRep {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 20px; /* Spazio tra gli elementi */
+    box-sizing: border-box;
+    flex-wrap: nowrap; /* Impedisce che gli elementi vadano a capo */
+    /*border: 1px solid red;*/
+    padding: 5px;
+}
+/* Rendi gli elementi interni allineati correttamente */
+#divDataRep div, #divDataRep label {
+    display: inline-block; /* Evita che vadano a capo */
+    white-space: nowrap; /* Evita che il testo si spezzi */
+    width: auto; /* Evita che occupino tutto lo spazio */
+    align-items: center;
+    font-size: x-large;
+    font-weight: bold;
+}
+/* Per inserire i dati della tabella filto per Dipendenti in verticale */
+#Dipendenti .container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+}
+    </style>
+</head>
+<body>
+
+<!-- Form per il login (visibile solo quando changePassword è true) -->
+<div id="loginContainer" class="container">
+    
+    <img src="https://raw.githubusercontent.com/StefanoBr1/TecnoOre/refs/heads/main/Tecnoelettra_1..bmp" alt="Descrizione" width="300">
+        <h1>Tecnoelettra</h1>
+        <h2>Accedi</h2>
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Inserisci username">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Inserisci password">
+        </div>
+        <button onclick="effettuaLogin()">Login</button>
+        <p id="loginMessage" style="color: red;"></p>
+</div>
+
+<!-- Form di Cambio Password (visibile solo quando changePassword è true) -->
+<div id="changePasswordContainer" style="display: none;">
+    <h3>Cambia la tua password</h3>
+    <input type="text" id="changePasswordUsername" placeholder="Username" readonly />
+    <input type="password" id="newPassword" placeholder="Nuova password" />
+    <input type="password" id="confirmPassword" placeholder="Conferma la nuova password" />
+    <button onclick="cambiaPassword()">Cambia password</button>
+    <p id="changePasswordMessage"></p>
+</div>
+
+<!-- Header, parte fissa in alto -->
+<header id="appHeader">
+    <div class="top-bar">
+        <img src="https://raw.githubusercontent.com/StefanoBr1/TecnoOre/refs/heads/main/Tecnoelettra_1..bmp" alt="Descrizione" width="20%">
+        <div id="User"></div>
+        <button id="logoutBtn" onclick="effettuaLogout()">Logout</button>
+    </div>
+
+    <nav class="nav-buttons">
+        <button id= "salvaOreBtn" onclick="cambiaPagina('salvaOre')">Salva Ore</button>
+        <button id= "oreDipBtn" onclick="cambiaPagina('oreDip')">Ore Dipendenti</button>
+    </nav>
+</header>
+
+<!-- Contenitore delle 2 pagine - Salva ore e Ore dipendenti (la parte per la conferma ore viene fatta nella stessa pagina salva ore) -->
+<main id="content">
+    <!-- Qui verrà caricato il contenuto della pagina selezionata -->
+</main>
+
+<!-- Funzione per il cambio pagina -->
+<script>
+    // Funzione per cambiare pagina dinamicamente
+    function cambiaPagina(pagina) {
+        let content = document.getElementById("content");
+
+        if (pagina === "salvaOre") {
+            //Contenuto della pagina Salva Ore
+            content.innerHTML = `
+            <div id="divData" style= "background: #fff;">
+                <label style="font-size:x-large; font-weight: bold;">Salva ore giornata</label>
+                <div id="divDataIns">
+                    <label style="font-size:x-large; font-weight: bold;">Data</label>
+                    <input style="font-size:x-large" type="date" id="data">
+                    <button id="salvaBtn" onclick="creaReport(10)">Salva</button>
+                </div>
+            </div>
+                <table id="mainTable">
+                </table>
+            
+                <div>
+                    <div id="divDataRep" style="display:none">
+                    <div id="dataRep"></div>
+                    <label>Ore Tot.</label>
+                    <div id="totOre"></div>
+                </div>
+    
+                    <br style="font-size:small;">
+                    <! Tabella di report>
+                    <table border=1 id="reportTable">   
+                    </table>
+
+                    <! Pulsanti conferma e ritorna>
+                    <div style="display:none" id="retConfBtn">
+                            <button onclick="Return(10)">Modifica</button>
+                            <button id="confirmBtn" onclick="SalvaDB(10)">Conferma e salva</button>
+                    </div>  
+                    <div id="salvaMsg"></div>
+                </div>
+            `;
+            creaTabellaPrincipale(numRighe);
+            //
+            document.getElementById("salvaOreBtn").disabled = false;
+            document.getElementById("oreDipBtn").disabled = false;
+            document.getElementById("salvaOreBtn").style.backgroundColor = "blue";
+            document.getElementById("oreDipBtn").style.backgroundColor = "grey";
+           
+        } else if (pagina === "oreDip") {
+            content.innerHTML = `
+                   <div id="Dipendenti">
+                    <table>
+                        <tbody><tr>
+                            <td style = "width: 80px"> 
+        
+                        <div class="container">
+                            <h2>Filtra i Dati</h2>
+            
+            
+                            <div class="form-group">
+                                <label>Data Inizio:</label>
+                                <input type="date" id="dataInizioDip">
+                            </div>
+            
+                            <div class="form-group">
+                                <label>Data Fine:</label>
+                                <input type="date" id="dataFineDip">
+                            </div>
+    
+                            <button onclick="caricaOreDip()">Visualizza</button>
+                            <div id="RisultatoDip"></div>
+                         
+                        </div>
+                        </td>
+                        <td>
+                            <table id="tabellaDatiDip" style = "width: 100%">
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+            `;
+            document.getElementById("salvaOreBtn").style.backgroundColor = "grey";
+            document.getElementById("oreDipBtn").style.backgroundColor = "blue";
+            }
+    }
+</script>
+
+<!-- Funzione per formattare la data in gg-mm-aaaa -->
+<script>
+    function formatData(data) {
+        return data.split("-").reverse().join("-");
+    }
+</script>
+
+ <!-- Script per la definizione di variabili -->
+ <script>
+    let numRighe = 10;
+    let URLWorker = "https://login.tecnoelettra-stefano.workers.dev"
+</script>
+
+<!-- Script per effettuare il login - Con login ok, carica pagina Salva Ore-->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        verificaSessione();
+    }); 
+
+    async function effettuaLogin() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const loginMessage = document.getElementById("loginMessage");
+    
+        if (!username || !password) {
+            loginMessage.textContent = "Inserisci username e password";
+            return;
+        }
+    
+        try {
+            const response = await fetch(URLWorker + "/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+            });
+    
+            const data = await response.json();  // ✅ Legge il JSON una sola volta
+    
+            if (response.ok) {
+                if (data.changePassword) {
+                    mostraFormCambioPassword(username);
+                } else {
+                    //localStorage.setItem("token", data.token);
+                    localStorage.setItem("sessioneUtente", JSON.stringify({ username, token: data.token, id: data.id }));
+                    const sessione = JSON.parse(localStorage.getItem("sessioneUtente"));
+                    loginMessage.textContent = "";
+                    document.getElementById("User").textContent = sessione.username;
+                    cambiaPagina("salvaOre");
+                    mostraContenuto();
+                }
+            } else {
+                console.error("Errore:", data.error);
+                loginMessage.textContent = data.error || "Credenziali non valide";
+            }
+        } catch (error) {
+            console.error("Errore di login:", error);
+            loginMessage.textContent = "Errore di connessione";
+        }
+    }
+    
+    // Funzione per mostrare il modulo di cambio password
+    function mostraFormCambioPassword(username) {
+        // Mostra la sezione del cambio password
+        document.getElementById("loginContainer").style.display = "none";
+        document.getElementById("changePasswordContainer").style.display = "block"; // Aggiungi questa sezione al tuo HTML
+    
+        // Imposta il nome utente per il cambio password
+        document.getElementById("changePasswordUsername").value = username;
+    }
+    
+    // Funzione per cambiare la password
+    async function cambiaPassword() {
+        const username = document.getElementById("changePasswordUsername").value;
+        const newPassword = document.getElementById("newPassword").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const changePasswordMessage = document.getElementById("changePasswordMessage");
+    
+        if (!newPassword || !confirmPassword) {
+            changePasswordMessage.textContent = "Inserisci la nuova password e la conferma";
+            return;
+        }
+    
+        if (newPassword !== confirmPassword) {
+            changePasswordMessage.textContent = "Le password non corrispondono";
+            return;
+        }
+    
+        try {
+            const response = await fetch(URLWorker + "/change-password", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username, newPassword }),
+            });
+    
+            const data = await response.json();
+    
+            if (response.ok) {
+                changePasswordMessage.textContent = "Password cambiata con successo!";
+                // Puoi decidere cosa fare dopo, ad esempio tornare al login o reindirizzare l'utente
+                document.getElementById("changePasswordContainer").style.display = "none"; // Nascondi il form cambio password
+                document.getElementById("loginContainer").style.display = "block"; // Torna al login
+            } else {
+                changePasswordMessage.textContent = "Errore nel cambiamento della password";
+            }
+        } catch (error) {
+            console.error("Errore nel cambio password:", error);
+            changePasswordMessage.textContent = "Errore di connessione";
+        }
+    }
+        
+        function verificaSessione() {
+            const sessione = JSON.parse(localStorage.getItem("sessioneUtente"));
+        
+            if (sessione && sessione.token) {
+                document.getElementById("User").textContent = sessione.username;
+                cambiaPagina("salvaOre");
+                mostraContenuto();
+            } else {
+                mostraLogin();
+            }
+        }
+        
+        function mostraContenuto() {
+            document.getElementById("loginContainer").style.display = "none";
+            document.getElementById("appHeader").style.display = "block";
+            document.getElementById("content").style.display = "block";
+  
+        }
+        
+        function mostraLogin() {
+            document.getElementById("loginContainer").style.display = "block";
+            document.getElementById("appHeader").style.display = "none";
+            document.getElementById("content").style.display = "none";
+         }
+        
+        function effettuaLogout() {
+            localStorage.removeItem("sessioneUtente");
+            mostraLogin();
+        }
+</script>
+
+<!-- Script per caricamento data odierna nei campi data-->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Se il campo "data" è già presente, imposta la data odierna subito
+        function setTodayDate() {
+            let dataInput = document.getElementById("data");
+            let today = new Date().toISOString().split('T')[0]; 
+            if (dataInput && !dataInput.value) { // Imposta la data solo se è vuota
+                dataInput.value = today;
+            }
+            let dataStartDip = document.getElementById("dataInizioDip");
+            if (dataStartDip && !dataStartDip.value) { // Imposta la data solo se è vuota
+                dataStartDip.value = today;
+            }
+            let dataEndDip = document.getElementById("dataFineDip");
+            if (dataEndDip && !dataEndDip.value) { // Imposta la data solo se è vuota
+                dataEndDip.value = today;
+            }
+        }
+
+        // Controlla subito se il campo "data" esiste
+        setTodayDate();
+
+        // Osserva cambiamenti nel contenuto di "content"
+        let content = document.getElementById("content");
+        if (content) {
+            let observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    // Controlla se il campo "data" è stato aggiunto
+                    setTodayDate();
+                });
+            });
+
+            // Avvia l'osservatore sui figli di "content"
+            observer.observe(content, { childList: true, subtree: true });
+        }
+    });
+</script>
+
+<!-- Script per la creazione della tabella principale mainTable-->
+<script>
+    //Funzione per la creazione della sottotabella relativa a ogni singola commessa
+    function creaCommessa(indice) {
+    let contenitore = document.createElement("div");
+    contenitore.id = `commessa${indice}`;
+    contenitore.classList.add("commessa-container");
+
+    contenitore.innerHTML = `
+        <!-- Prima riga: Etichette -->
+        <div class="commessa-riga">
+            <div class="commessa-col"><label>Cliente</label></div>
+            <div class="commessa-col"><label>Commessa</label></div>
+            <div class="commessa-col"><label>Ore</label></div>
+        </div>
+
+        <!-- Seconda riga: Input -->
+        <div class="commessa-riga">
+            <div class="commessa-col"><input type="text" id="Cliente${indice}" /></div>
+            <div class="commessa-col"><input type="text" id="Commessa${indice}" /></div>
+            <div class="commessa-col"><input type="number" id="Ore${indice}" placeholder="0"/></div>
+        </div>
+
+        <!-- Terza riga: Titolo Lavoro svolto -->
+        <div class="commessa-lavoro">
+            <label>Lavoro svolto</label>
+        </div>
+
+        <!-- Quarta riga: Textarea -->
+        <div class="commessa-lavoro">
+            <textarea id="Lavoro${indice}" placeholder="Scrivi qui..."></textarea>
+        </div>
+    `;
+    return contenitore;
+}
+
+// Funzione per creare la tabella principale con le commesse
+function creaTabellaPrincipale(numRighe) {
+    let mainTable = document.getElementById("mainTable");
+
+    for (let i = 1; i <= numRighe; i++) {
+        let commessa = creaCommessa(i);
+        mainTable.appendChild(commessa);
+    }
+}
+
+// Chiamata della funzione per generare 10 commesse
+//creaTabellaPrincipale(10);
+
+</script>
+
+<!-- Script per la creazione della tabella di riepilogo una volta premuto SALVA - reportTable-->
+<script>
+    
+    // Funzione per la creazione della sottotabella relativa a ogni singola commessa
+function creaReportCommessa(indice) {
+    let repContenitore = document.createElement("div");
+    repContenitore.id = `repTabCommessa${indice}`;
+    repContenitore.classList.add("report-container");
+
+    repContenitore.innerHTML = `
+        <div class="report-row">
+            <div class="report-column">
+                <label>Cliente</label>
+                <input style="text-align:center; font-size:large; background-color: #e6e6e6" type="text" id="repCliente${indice}" readonly />
+            </div>
+            <div class="report-column">
+                <label>Commessa</label>
+                <input style="text-align:center; font-size:large; background-color: #e6e6e6" type="text" id="repCommessa${indice}" readonly />
+            </div>
+            <div class="report-column">
+                <label>Ore</label>
+                <input style="text-align:left; font-size:large; background-color: #e6e6e6" type="number" id="repOre${indice}" readonly />
+            </div>
+        </div>
+
+        <div class="report-row">
+            <label style="text-align:left; font-size:large">Lavoro Svolto</label>
+            <textarea style="text-align:left; width:100%; font-size:large; background-color: #e6e6e6; height: 3em; resize: none; overflow-y: auto;" id="repLavoro${indice}" readonly></textarea>
+        </div>
+    `;
+    
+    return repContenitore;
+}
+
+// Funzione per la creazione della tabella principale reportTable
+function creaReport(numRighe) {
+    let reportTable = document.getElementById("reportTable");
+    const dataIns1 = document.getElementById("data");
+
+    // Verifica se la data è stata inserita, altrimenti ritorna
+    if (dataIns1.value) {
+        // Se la data è inserita, viene copiata nel campo testo a inizio tabella report e rivoltata per leggerla nel formato corretto
+        document.getElementById("dataRep").textContent = dataIns1.value;
+        document.getElementById("dataRep").textContent = formatData(document.getElementById("dataRep").textContent);
+        let datiPresenti = false;
+        let totOre = 0;
+        for (let i = 1; i <= numRighe; i++) {
+            let ore = document.getElementById(`Ore${i}`).value;
+            if (ore != "") {
+                if (document.getElementById(`Lavoro${i}`).value == "") {
+                alert("Inserire lavoro svolto nelle ore caricate");
+                return;
+                } else {
+                ore = parseFloat(ore); // Converte la stringa in numero decimale
+                totOre += ore; 
+                datiPresenti = true;
+                // Crea una nuova riga per ogni commessa con almeno 1 ora
+                let row = document.createElement("div");
+                row.classList.add("report-row");
+                
+                // Aggiungi la sottotabella per ogni commessa
+                let repTabCommessa = creaReportCommessa(i);
+                row.appendChild(repTabCommessa);
+                reportTable.appendChild(row);
+
+                // Copia i valori inseriti nei campi della sottotabella di report
+                document.getElementById(`repCliente${i}`).value = document.getElementById(`Cliente${i}`).value;
+                document.getElementById(`repCommessa${i}`).value = document.getElementById(`Commessa${i}`).value;
+                document.getElementById(`repLavoro${i}`).value = document.getElementById(`Lavoro${i}`).value;
+                document.getElementById(`repOre${i}`).value = document.getElementById(`Ore${i}`).value;
+                }
+            }
+        }
+ // Se non ci sono dati da salvare, avvisa e interrompi
+ if (!datiPresenti) {
+        alert('Nessun dato da salvare!');
+        return;
+    }
+
+    // Se ci sono dati validi, nascondi la schermata di inserimento e mostra la tabella report
+    document.getElementById("divData").style.display = "none"; 
+    document.getElementById("mainTable").style.display = "none"; 
+    document.getElementById("divDataRep").style.display = "block"; 
+    document.getElementById("reportTable").style.display = "block"; 
+    document.getElementById("retConfBtn").style.display = "block";
+    document.getElementById("salvaOreBtn").disabled = true;
+    document.getElementById("oreDipBtn").disabled = true;
+    document.getElementById("totOre").textContent = totOre;
+}
+}
+
+</script>
+
+<!-- Script per il salvataggio sul database -->
+<script>
+    //Salvataggio dati su database - URL del backend cloudfare che ospita anche il DB
+    const workerUrl = URLWorker;
+    async function SalvaDB(numRighe) {
+
+        // Recupera la sessione utente salvata
+        const sessione = localStorage.getItem("sessioneUtente");
+        if (!sessione) {
+            console.error("Errore: Nessuna sessione trovata. Effettua il login.");
+            alert("Sessione scaduta. Effettua nuovamente il login.");
+            return;
+        }
+
+        // Converte la stringa JSON in un oggetto
+        const sessioneUtente = JSON.parse(sessione);
+        const token = sessioneUtente.token;
+        const userId = sessioneUtente.id; // Prende l'ID dell'utente loggato
+        const username = sessioneUtente.username;
+
+        if (!token || !userId) {
+            console.error("Errore: Token o ID mancanti nella sessione.");
+            alert("Errore di autenticazione. Effettua di nuovo il login.");
+            return;
+        }
+
+        let datiDaInviare = [];
+        let totaleOre = 0;
+
+        for (let i = 1; i <= numRighe; i++) {
+        let cliente = document.getElementById(`Cliente${i}`).value || "/";
+        let commessa = document.getElementById(`Commessa${i}`).value || "/";
+        let lavoro = document.getElementById(`Lavoro${i}`).value || "/";
+        let ore = parseFloat(document.getElementById(`Ore${i}`).value) || 0;
+        let data = document.getElementById("data").value;
+
+            if (ore > 0) {
+                datiDaInviare.push({
+                    username,
+                    data,
+                    cliente,
+                    commessa,
+                    lavoro,
+                    ore
+                });
+            totaleOre += ore;
+            }
+        }
+
+if (datiDaInviare.length === 0) {
+        alert("Nessun dato da salvare!");
+        return;
+    }
+    document.getElementById("salvaMsg").textContent = "Salvataggio in corso";
+    document.getElementById("confirmBtn").disabled = true;
+
+    const response = await fetch(workerUrl + "/salva", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ dati: datiDaInviare, totaleOre, userId })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Errore HTTP: ${response.status}`);
+        document.getElementById("salvaMsg").textContent = "";
+        document.getElementById("confirmBtn").disabled = false;
+    } else {
+        const message = await response.text();
+        document.getElementById("salvaMsg").textContent = "";
+        document.getElementById("confirmBtn").disabled = false;
+        alert(`${message}`);
+
+            let reportTable = document.getElementById("reportTable");
+
+             // Svuota completamente il contenitore della report table
+            reportTable.innerHTML = "";
+
+            //Reinizializzazione tabella main
+             let mainTable = document.getElementById("mainTable");
+
+             // Svuota completamente il contenitore della main table
+             mainTable.innerHTML = "";
+
+             //Ricrea la tabella main vuota
+             creaTabellaPrincipale(numRighe);
+
+        }
+        //Viene nascosta la tabella report e i pulsanti conferma e return e riattivati la main e il pulsante salva
+         document.getElementById("divData").style.display = "block"; 
+         document.getElementById("mainTable").style.display = "block"; 
+         document.getElementById("divDataRep").style.display = "none"; 
+         document.getElementById("reportTable").style.display = "none"; 
+         document.getElementById("retConfBtn").style.display = "none";
+         document.getElementById("salvaOreBtn").disabled = false;
+         document.getElementById("oreDipBtn").disabled = false;
+         document.getElementById("confirmBtn").disabled = false;
+    }
+
+</script>
+
+<!-- Script per il ritorno a modificare le ore commesse -->
+<script>
+    async function Return(numRighe) {
+    let reportTable = document.getElementById("reportTable");
+
+    // Svuota completamente il contenitore della report table
+    reportTable.innerHTML = "";
+
+    // Mostra di nuovo la tabella principale e nasconde il report
+    document.getElementById("divData").style.display = "block"; 
+    document.getElementById("mainTable").style.display = "block"; 
+    document.getElementById("divDataRep").style.display = "none"; 
+    document.getElementById("reportTable").style.display = "none"; 
+    document.getElementById("retConfBtn").style.display = "none";
+    document.getElementById("salvaOreBtn").disabled = false;
+    document.getElementById("oreDipBtn").disabled = false;
+}
+</script>
+
+<!-- Script per il caricamento dei dati delle ore lavorate in tabella Ore Dipendenti -->
+<script>
+    async function caricaOreDip() {
+    document.getElementById("RisultatoDip").textContent = "Caricamento...";
+
+    // Recupera la sessione utente salvata
+    const sessione = localStorage.getItem("sessioneUtente");
+    if (!sessione) {
+        console.error("Errore: Nessuna sessione trovata. Effettua il login.");
+        alert("Sessione scaduta. Effettua nuovamente il login.");
+        return;
+    }
+
+    // Converte la stringa JSON in un oggetto
+    const sessioneUtente = JSON.parse(sessione);
+    const token = sessioneUtente.token;
+    const userId = sessioneUtente.id; // Prende l'ID dell'utente loggato
+    const username = sessioneUtente.username;
+
+    if (!token || !userId) {
+        console.error("Errore: Token o ID mancanti nella sessione.");
+        alert("Errore di autenticazione. Effettua di nuovo il login.");
+        return;
+    }
+
+    
+    const dataInizio = document.getElementById('dataInizioDip').value;
+    const dataFine = document.getElementById('dataFineDip').value;
+
+
+    try {
+        const workerUrl = URLWorker;
+        const response = await fetch(workerUrl + "/api/miei_dati", {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ dataInizio, dataFine, userId }) // Passiamo solo userId
+        });
+
+        if (!response.ok) {
+            throw new Error(`Errore HTTP: ${response.status}`);
+        }
+
+        const dati = await response.json();
+        console.log("📊 Risposta completa:", JSON.stringify(dati, null, 2));
+
+        document.getElementById("RisultatoDip").textContent = "Dati caricati";
+
+        const tabellaDip = document.getElementById('tabellaDatiDip');
+        tabellaDip.innerHTML = `
+        <tr>
+           <th>Data</th>
+           <th>Ore</th>  
+        </tr>`;
+
+        console.log("📦 Dati ricevuti:", dati);
+        if (!Array.isArray(dati)) {
+    console.error("❌ Errore: dati non è un array", dati);
+    return;
+}
+
+        dati.forEach(d => {
+            tabellaDip.innerHTML += `
+                <tr>
+                    <td>${formatData(d.Data)}</td>
+                    <td>${d.Ore ?? '-'}</td>
+                </tr>
+            `;
+        });
+
+    } catch (error) {
+        console.error("❌ Errore nel caricamento:", error);
+        document.getElementById("RisultatoDip").textContent = "Errore nel caricamento dati";
+    }
+};
+</script>
+</body>
+</html>
+
