@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizzazione Dati Dipendenti</title>
+    <style>
+ body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+
+.container {
+    max-width: 100%;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px;
+    border: none;
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+}   
+
+button:hover {
+    background-color: #0056b3;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #007BFF;
+    color: white;
+}    
+
+/* HEADER */
+#appHeader {
+    background: #f8f9fa;
+    padding: 10px 20px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    box-sizing: border-box; /* Aggiunto per evitare overflow */
+}
+
+/* Barra superiore (top-bar) */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Aggiungi questo per gestire la larghezza della barra */
+    padding-bottom: 5px; /* Ridurre lo spazio sotto la top-bar */
+}
+
+#User {
+    font-weight: bold;
+    font-size: 30px; /* Aumenta la dimensione del testo per l'utente */
+    user-select: none;
+    width: 80%;
+    text-align: center;
+}
+
+/* Bottoni di logout */
+#logoutBtn {
+    background: rgb(95, 95, 95);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px; /* Ridurre la dimensione del bottone logout */
+    width: 10%;
+}
+
+/* Sezione navigazione */
+.nav-buttons {
+    display: flex;
+    justify-content: space-between; /* Assicura che i pulsanti stiano sulla stessa riga */
+    gap: 10px; /* Aggiungi un piccolo gap tra i pulsanti */
+    margin-top: 5px;
+    width: 100%; /* Assicura che prenda tutta la larghezza disponibile */
+    box-sizing: border-box;
+}
+
+.nav-buttons button {
+    padding: 8px 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    flex: 1;
+    border-radius: 5px;
+    margin: 0 5px; /* Piccolo margine per distanziare i pulsanti */
+}
+
+/* Bottoni disabilitati */
+.nav-buttons button {
+    background: #6c757d;
+    color: white;
+}
+
+/* Ottimizzazione per schermi mobili */
+@media screen and (max-width: 768px) {
+    #appHeader {
+        padding: 10px 15px; /* Ridurre il padding per mobile */
+    }
+
+    .top-bar {
+        padding-bottom: 0px; /* Ridurre lo spazio sotto la top-bar su mobile */
+    }
+
+    .nav-buttons {
+        flex-wrap: nowrap; /* I pulsanti rimangono sulla stessa riga */
+    }
+
+    .nav-buttons button {
+        width: auto; /* Evitare che i pulsanti si espandano a tutta larghezza */
+        flex: 1 1 45%; /* Permettere che i pulsanti siano più compatti su mobile */
+    }
+}
+
+.container {
+    align-items: center;
+    
+}
+    </style>
+</head>
+<body>
+
+ <!-- Form per il login (visibile solo quando changePassword è true) -->
+<div id="loginContainer" class="container">
+    
+    <img src="https://raw.githubusercontent.com/StefanoBr1/Tecnoelettra/refs/heads/main/Tecnoelettra_1..bmp" alt="Descrizione" width="300">
+        <h1>Tecnoelettra</h1>
+        <h2>Accedi</h2>
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Inserisci username">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Inserisci password">
+        </div>
+        <button onclick="effettuaLogin()">Login</button>
+        <p id="loginMessage" style="color: red;"></p>
+</div>
+
+<!-- Form di Cambio Password (visibile solo quando changePassword è true) -->
+<div id="changePasswordContainer" style="display: none;">
+    <h3>Cambia la tua password</h3>
+    <input type="text" id="changePasswordUsername" placeholder="Username" readonly />
+    <input type="password" id="newPassword" placeholder="Nuova password" />
+    <input type="password" id="confirmPassword" placeholder="Conferma la nuova password" />
+    <button onclick="cambiaPassword()">Cambia password</button>
+    <p id="changePasswordMessage"></p>
+</div>
+
+<!-- Header, parte fissa in alto -->
+<header id="appHeader">
+    <div class="top-bar">
+        <img src="https://raw.githubusercontent.com/StefanoBr1/Tecnoelettra/refs/heads/main/Tecnoelettra_1..bmp" alt="Descrizione" width="10%">
+        <div id="User" width="60%"></div>
+        <button id="logoutBtn" onclick="effettuaLogout()" width="10%">Logout</button>
+    </div>
+
+    <nav class="nav-buttons">
+        <button id= "visCommBtn" onclick="cambiaPagina('visComm')">Ore Commesse</button>
+        <button id= "visDipBtn" onclick="cambiaPagina('visDip')">Ore Dipendenti</button>
+        <button id= "modDipBtn" onclick="cambiaPagina('modDip')">Modifica Ore Dipendenti</button>
+        <button id= "visCommTot" onclick="checkEnbl()">Ore Commesse Totali</button>
+    </nav>
+</header>
+
+<!-- Contenitore delle 2 pagine - visComm per visualizzare le ore commesse e VisDip per visualizzare le ore dipendenti -->
+<main id="content">
+    <!-- Qui verrà caricato il contenuto della pagina selezionata -->
+</main>
+
+<!-- Funzione per la verifica dell'abilitazione all'utilizzo della tabella OreCommesseTotali - Se non abilitato non apre la relativa pagina-->
+<script>
+    async function checkEnbl(){
+        //Chiama una funzione fetch per verificare sul backend se è abilitato l'utilizzo della tabella OreCommesseLocali
+        try {
+            const response = await fetch(URLWorker + "/check-variable", {
+                method: "POST",
+                headers: {
+                "Content-Type": "application/json"
+                }
+            });
+            const data = await response.json();
+
+            if (data.result) {
+                cambiaPagina('visCommTot');
+            } else {
+                cambiaPagina('notEnbl');
+            }
+        } catch (err) {
+            console.error("Errore nella richiesta:", err);
+            alert("Errore nel server");
+        }
+    };
+</script>
+
+<!-- Funzione per il cambio pagina - il contennuto delle pagine è definito nella funzione-->
+<script>
+    // Funzione per cambiare pagina dinamicamente
+    function cambiaPagina(pagina) {
+        let content = document.getElementById("content");
+
+        if (pagina === "visComm") {
+            //Contenuto della pagina visualizzazione commesse
+            content.innerHTML = `
+           <div id="Commesse">
+              <table>
+                <tbody><tr>
+                <td style = "width: 200px"> 
+    
+                <div class="container">
+                <h2>Filtra i Dati</h2>
+
+                <div class="form-group">
+                    <label>Seleziona Dipendenti:</label>
+                    <select id="dipendenti" multiple>
+                    <option value="tutti" selected>Tutti</option>
+                    <option value="Leonardo Bejan">Leonardo Bejan</option>
+                    <option value="Enrico Bertone">Enrico Bertone</option>
+                    <option value="Emanuele Bono">Emanuele Bono</option>
+                    <option value="Stefano Bruno">Stefano Bruno</option>
+                    <option value="Davide Canetto">Davide Canetto</option>
+                    <option value="Marco Carbonari">Marco Carbonari</option>
+                    <option value="Piergiuseppe Cinieri">Piergiuseppe Cinieri</option>
+                    <option value="Alessandro Eandi">Alessandro Eandi</option>
+                    <option value="Paolo Eandi">Paolo Eandi</option>
+                    <option value="Roberto Eandi">Roberto Eandi</option>
+                    <option value="Simone Eandi">Simone Eandi</option>
+                    <option value="Barra Fall">Barra Fall</option>
+                    <option value="Carlo Fontana">Carlo Fontana</option>
+                    <option value="Daniela Fontana">Daniela Fontana</option>
+                    <option value="Giorgio Milanolo">Giorgio Milanolo</option>
+                    <option value="Tommasino Panero">Tommasino Panero</option>
+                    <option value="Danilo Peila">Danilo Peila</option>
+                    <option value="Mattia Salvador">Mattia Salvador</option>
+                    <option value="Mauro Salvador">Mauro Salvador</option>
+                    <option value="Walter Salvador">Walter Salvador</option> 
+                    <option value="Federico Vianzino">Federico Vianzino</option>
+                    <option value="Roberto Parenti">Roberto Parenti</option> 
+                    <option value="Ospite_1">Ospite_1</option> 
+                    <option value="Ospite_2">Ospite_2</option>
+                    <option value="Ospite_3">Ospite_3</option> 
+                    </select>
+                </div>
+        
+                <div >
+                    <table style = "width: 100%">
+                    <tbodyd>
+                    <tr>
+                    <td><button onclick="Ieri()">Ieri</button></td>
+                    <td><button onclick="Oggi()">Oggi</button></td>
+                    </tr>
+                    </tbody>
+                    </table>
+                </div>
+                
+                <div class="form-group">
+                    <label>Data Inizio:</label>
+                    <input type="date" id="dataInizio">
+                </div>
+        
+                <div class="form-group">
+                    <label>Data Fine (opzionale):</label>
+                    <input type="date" id="dataFine">
+                </div>
+
+                <div class="form-group">
+                    <label>Cliente:</label>
+                    <input type="text" id="cliente">
+                </div>
+
+                <div class="form-group">
+                    <label>Commessa:</label>
+                    <input type="text" id="commessa">
+                </div>
+
+                <button onclick="caricaDati()">Cerca</button>
+                <input type="text" id="Risultato" style = "border: 0cm;">
+
+                <div >
+                    <table style = "width: 100%">
+                    <tbodyd>
+                    <tr>
+                        <td><button onclick="eliminaSelezionati()">elimina</button></td>
+                        <td><button onclick="printTable()">stampa</button></td>
+                    </tr>
+                    </tbody>
+                    </table>
+                </div>
+
+            </div>
+            </td>
+            <td>
+                <table id="tabellaDatiComm" style = "width: 100%">
+                    <thead>
+                    <tr>
+                    <th>Data</th>
+                    <th>Cliente</th>
+                    <th>Commessa</th>
+                    <th>Lavoro Svolto</th>
+                    <th>Ore</th>
+                    <th>Nome Dipendente</th>
+                    <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
+                    </tr>
+                    </thead>
+                    <tbody id="tabellaDati"></tbody>
+                </table>
+            </td>
+             </tr>
+            </tbody>
+            </table>
+            </div>
+            `;
+            document.getElementById("visCommBtn").style.backgroundColor = "blue";
+            document.getElementById("visDipBtn").style.backgroundColor = "grey";
+            document.getElementById("modDipBtn").style.backgroundColor = "grey";
+            document.getElementById("visCommTot").style.backgroundColor = "grey";
+           
+        } else if (pagina === "visDip") {
+            content.innerHTML = `
+                <div id="Dipendenti">
+                    <table>
+                    <tbody><tr>
+                    <td style = "width: 200px"> 
+        
+                    <div class="container">
+                    <h2>Filtra i Dati</h2>
+    
+                    <div class="form-group">
+                        <label>Seleziona Dipendenti:</label>
+                        <select id="dipendentiDip" multiple>
+                        <option value="tutti" selected>Tutti</option>
+                        <option value="1001">Leonardo Bejan</option>
+                        <option value="1002">Enrico Bertone</option>
+                        <option value="1003">Emanuele Bono</option>
+                        <option value="1004">Stefano Bruno</option>
+                        <option value="1005">Davide Canetto</option>
+                        <option value="1006">Marco Carbonari</option>
+                        <option value="1007">Piergiuseppe Cinieri</option>
+                        <option value="1008">Alessandro Eandi</option>
+                        <option value="1009">Paolo Eandi</option>
+                        <option value="1010">Roberto Eandi</option>
+                        <option value="1011">Simone Eandi</option>
+                        <option value="1012">Barra Fall</option>
+                        <option value="1013">Carlo Fontana</option>
+                        <option value="1014">Daniela Fontana</option>
+                        <option value="1015">Giorgio Milanolo</option>
+                        <option value="1016">Tommasino Panero</option>
+                        <option value="1017">Danilo Peila</option>
+                        <option value="1018">Mattia Salvador</option>
+                        <option value="1019">Mauro Salvador</option>
+                        <option value="1020">Walter Salvador</option> 
+                        <option value="1021">Federico Vianzino</option>
+                        <option value="1022">Roberto Parenti</option> 
+                        <option value="1023">Ospite_1</option> 
+                        <option value="1024">Ospite_2</option>
+                        <option value="1025">Ospite_3</option> 
+                        </select>
+                    </div>
+            
+                    <div >
+                        <table style = "width: 100%">
+                        <tbodyd>
+                        <tr>
+                        <td><button onclick="IeriDip()">Ieri</button></td>
+                        <td><button onclick="OggiDip()">Oggi</button></td>
+                        </tr>
+                        </tbody>
+                        </table>
+                    </div>
+               
+                    <div class="form-group">
+                        <label>Data Inizio:</label>
+                        <input type="date" id="dataInizioDip">
+                    </div>
+            
+                    <div class="form-group">
+                        <label>Data Fine (opzionale):</label>
+                        <input type="date" id="dataFineDip">
+                    </div>
+    
+                    <button onclick="caricaDatiDip()">Cerca</button>
+                    <input type="text" id="RisultatoDip" style = "border: 0cm;">
+              
+                </div>
+                </td>
+                <td>
+                <table id="tabellaDatiDip" style = "width: 100%">
+                </table>
+                </td>
+                </tr>
+                </tbody>
+                </table>
+                </div>
+            `;
+            document.getElementById("visCommBtn").style.backgroundColor = "grey";
+            document.getElementById("visDipBtn").style.backgroundColor = "blue";
+            document.getElementById("modDipBtn").style.backgroundColor = "grey";
+            document.getElementById("visCommTot").style.backgroundColor = "grey";
+           
+
+        } else if (pagina === "modDip") {
+            content.innerHTML = `
+                <div id="ModificaDipendenti">
+                    <table>
+                    <tbody><tr>
+                    <td style = "width: 200px"> 
+        
+                    <div class="container">
+                        <h2>Seleziona Dati</h2>
+    
+                        <div class="form-group">
+                            <label>Seleziona Dipendente:</label>
+                            <select id="dipendentiMod" multiple>
+                            <option value="1001" selected>Leonardo Bejan</option>
+                            <option value="1002">Enrico Bertone</option>
+                            <option value="1003">Emanuele Bono</option>
+                            <option value="1004">Stefano Bruno</option>
+                            <option value="1005">Davide Canetto</option>
+                            <option value="1006">Marco Carbonari</option>
+                            <option value="1007">Piergiuseppe Cinieri</option>
+                            <option value="1008">Alessandro Eandi</option>
+                            <option value="1009">Paolo Eandi</option>
+                            <option value="1010">Roberto Eandi</option>
+                            <option value="1011">Simone Eandi</option>
+                            <option value="1012">Barra Fall</option>
+                            <option value="1013">Carlo Fontana</option>
+                            <option value="1014">Daniela Fontana</option>
+                            <option value="1015">Giorgio Milanolo</option>
+                            <option value="1016">Tommasino Panero</option>
+                            <option value="1017">Danilo Peila</option>
+                            <option value="1018">Mattia Salvador</option>
+                            <option value="1019">Mauro Salvador</option>
+                            <option value="1020">Walter Salvador</option> 
+                            <option value="1021">Federico Vianzino</option>
+                            <option value="1022">Roberto Parenti</option> 
+                            <option value="1023">Ospite_1</option> 
+                            <option value="1024">Ospite_2</option>
+                            <option value="1025">Ospite_3</option> 
+                            </select>
+                        </div>
+                          
+                        <div class="form-group">
+                            <label>Data:</label>
+                            <input type="date" id="dataSelMod">
+                        </div>
+    
+                        <button onclick="caricaDatiMod()">Cerca</button>
+                        <input type="text" id="RisultatoSelDip" style = "border: 0cm;">
+              
+                    </div>
+                    </td>
+
+                    <td style = "width: 200px"> 
+                    <div class="container">
+                        <h2>Modifica Dati</h2>
+                        <div class="form-group">
+                            <label>Dipendente:</label>
+                            <input type="text" id="modDipendente" readonly>
+                            <input type="text" id="idModDipendente" readonly>  
+                        </div>
+
+                        <div class="form-group">
+                            <label>Data:</label>
+                            <input type="text" id="dataMod" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Ore:</label>
+                            <input type="text" id="oreMod" style = "border: 0cm;" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Modifica Ore:</label>
+                            <input type="text" id="modOre">
+                        </div>
+    
+                        <button onclick="modificaDatiDip()">Modifica</button>
+                        <input type="text" id="risultatoModDip" style = "border: 0cm;">
+              
+                    </div>
+                    </td>
+
+                </tr>
+                </tbody>
+                </table>
+                </div>
+            `;
+            document.getElementById("visCommBtn").style.backgroundColor = "grey";
+            document.getElementById("visDipBtn").style.backgroundColor = "grey";
+            document.getElementById("modDipBtn").style.backgroundColor = "blue";
+            document.getElementById("visCommTot").style.backgroundColor = "grey";
+           
+
+             } else if (pagina === "visCommTot") {
+                content.innerHTML = `
+             <div id="Commesse">
+              <table>
+                <tbody><tr>
+                <td style = "width: 200px"> 
+    
+                <div class="container">
+                <h2>Filtra i Dati</h2>
+
+                <div class="form-group">
+                    <label>Seleziona Dipendenti:</label>
+                    <select id="dipendenti" multiple>
+                    <option value="tutti" selected>Tutti</option>
+                    <option value="Leonardo Bejan">Leonardo Bejan</option>
+                    <option value="Enrico Bertone">Enrico Bertone</option>
+                    <option value="Emanuele Bono">Emanuele Bono</option>
+                    <option value="Stefano Bruno">Stefano Bruno</option>
+                    <option value="Davide Canetto">Davide Canetto</option>
+                    <option value="Marco Carbonari">Marco Carbonari</option>
+                    <option value="Piergiuseppe Cinieri">Piergiuseppe Cinieri</option>
+                    <option value="Alessandro Eandi">Alessandro Eandi</option>
+                    <option value="Paolo Eandi">Paolo Eandi</option>
+                    <option value="Roberto Eandi">Roberto Eandi</option>
+                    <option value="Simone Eandi">Simone Eandi</option>
+                    <option value="Barra Fall">Barra Fall</option>
+                    <option value="Carlo Fontana">Carlo Fontana</option>
+                    <option value="Daniela Fontana">Daniela Fontana</option>
+                    <option value="Giorgio Milanolo">Giorgio Milanolo</option>
+                    <option value="Tommasino Panero">Tommasino Panero</option>
+                    <option value="Danilo Peila">Danilo Peila</option>
+                    <option value="Mattia Salvador">Mattia Salvador</option>
+                    <option value="Mauro Salvador">Mauro Salvador</option>
+                    <option value="Walter Salvador">Walter Salvador</option> 
+                    <option value="Federico Vianzino">Federico Vianzino</option>
+                    <option value="Roberto Parenti">Roberto Parenti</option> 
+                    <option value="Ospite_1">Ospite_1</option> 
+                    <option value="Ospite_2">Ospite_2</option>
+                    <option value="Ospite_3">Ospite_3</option> 
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Data Inizio:</label>
+                    <input type="date" id="dataInizio">
+                </div>
+        
+                <div class="form-group">
+                    <label>Data Fine (opzionale):</label>
+                    <input type="date" id="dataFine">
+                </div>
+
+                <div class="form-group">
+                    <label>Cliente:</label>
+                    <input type="text" id="cliente">
+                </div>
+
+                <div class="form-group">
+                    <label>Commessa:</label>
+                    <input type="text" id="commessa">
+                </div>
+
+                <button onclick="caricaDatiCommesseCaric()">Cerca</button>
+                <input type="text" id="Risultato" style = "border: 0cm;">
+
+            </div>
+            </td>
+            <td>
+                <table id="tabellaDatiComm" style = "width: 100%">
+                    <thead>
+                    <tr>
+                    <th>Data</th>
+                    <th>Cliente</th>
+                    <th>Commessa</th>
+                    <th>Lavoro Svolto</th>
+                    <th>Ore</th>
+                    <th>Nome Dipendente</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tabellaDati"></tbody>
+                </table>
+            </td>
+             </tr>
+            </tbody>
+            </table>
+            </div>
+            `;
+
+            document.getElementById("visCommBtn").style.backgroundColor = "grey";
+            document.getElementById("visDipBtn").style.backgroundColor = "grey";
+            document.getElementById("modDipBtn").style.backgroundColor = "grey";
+            document.getElementById("visCommTot").style.backgroundColor = "blue";
+
+        } else if (pagina === "notEnbl"){
+            content.innerHTML = `
+            <h2 style="text-align: center;">Funzione non ancora disponibile</h2>
+            `;
+            
+            document.getElementById("visCommBtn").style.backgroundColor = "grey";
+            document.getElementById("visDipBtn").style.backgroundColor = "grey";
+            document.getElementById("modDipBtn").style.backgroundColor = "grey";
+            document.getElementById("visCommTot").style.backgroundColor = "blue";
+        }
+    }
+</script>
+
+ <!-- Funzione per formattare la data in gg-mm-aaaa -->
+<script>
+    function formatData(data) {
+        return data.split("-").reverse().join("-");
+    }
+</script>
+
+ <!-- Script per la definizione di variabili -->
+ <script>
+    let numRighe = 10;
+    let URLWorker = "https://login.tecnoelettra-stefano.workers.dev"
+</script>
+
+<!-- Script per effettuare la gestione utente - login/logout/verifica sessione utente/ caricamento pagine-->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        verificaSessione();
+    }); 
+
+    async function effettuaLogin() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const loginMessage = document.getElementById("loginMessage");
+    
+        if (!username || !password) {
+            loginMessage.textContent = "Inserisci username e password";
+            return;
+        }
+    
+        try {
+            const response = await fetch(URLWorker + "/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+            });
+    
+            const data = await response.json();  // ✅ Legge il JSON una sola volta
+    
+            if (response.ok) {
+                if (data.changePassword) {
+                    mostraFormCambioPassword(username);
+                } else {
+                    //localStorage.setItem("token", data.token);
+                    localStorage.setItem("sessioneUtente", JSON.stringify({ username, token: data.token, id: data.id }));
+                    const sessione = JSON.parse(localStorage.getItem("sessioneUtente"));
+                    loginMessage.textContent = "";
+                    document.getElementById("User").textContent = sessione.username;
+                    cambiaPagina("visComm");
+                    mostraContenuto();
+                }
+            } else {
+                console.error("Errore:", data.error);
+                loginMessage.textContent = data.error || "Credenziali non valide";
+            }
+        } catch (error) {
+            console.error("Errore di login:", error);
+            loginMessage.textContent = "Errore di connessione";
+        }
+    }
+    
+    // Funzione per mostrare il modulo di cambio password
+    function mostraFormCambioPassword(username) {
+        // Mostra la sezione del cambio password
+        document.getElementById("loginContainer").style.display = "none";
+        document.getElementById("changePasswordContainer").style.display = "block"; // Aggiungi questa sezione al tuo HTML
+    
+        // Imposta il nome utente per il cambio password
+        document.getElementById("changePasswordUsername").value = username;
+    }
+    
+    // Funzione per cambiare la password
+    async function cambiaPassword() {
+        const username = document.getElementById("changePasswordUsername").value;
+        const newPassword = document.getElementById("newPassword").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const changePasswordMessage = document.getElementById("changePasswordMessage");
+    
+        if (!newPassword || !confirmPassword) {
+            changePasswordMessage.textContent = "Inserisci la nuova password e la conferma";
+            return;
+        }
+    
+        if (newPassword !== confirmPassword) {
+            changePasswordMessage.textContent = "Le password non corrispondono";
+            return;
+        }
+    
+        try {
+            const response = await fetch(URLWorker + "/change-password", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username, newPassword }),
+            });
+    
+            const data = await response.json();
+    
+            if (response.ok) {
+                changePasswordMessage.textContent = "Password cambiata con successo!";
+                // Puoi decidere cosa fare dopo, ad esempio tornare al login o reindirizzare l'utente
+                document.getElementById("changePasswordContainer").style.display = "none"; // Nascondi il form cambio password
+                document.getElementById("loginContainer").style.display = "block"; // Torna al login
+            } else {
+                changePasswordMessage.textContent = "Errore nel cambiamento della password";
+            }
+        } catch (error) {
+            console.error("Errore nel cambio password:", error);
+            changePasswordMessage.textContent = "Errore di connessione";
+        }
+    }
+     
+    // Funzione per verificare la sessione utente attiva, se utente ok, apre le pagine, altrimento mostra la pagina di login
+    function verificaSessione() {
+        const sessione = JSON.parse(localStorage.getItem("sessioneUtente"));
+        
+        if (sessione && sessione.token) {
+            document.getElementById("User").textContent = sessione.username;
+            cambiaPagina("visComm");
+            mostraContenuto();
+        } else {
+            mostraLogin();
+        }
+    }
+    
+    // Funzione per mostrare il contenuto delle pagine, autenticazione ok
+    function mostraContenuto() {
+        document.getElementById("loginContainer").style.display = "none";
+        document.getElementById("appHeader").style.display = "block";
+        document.getElementById("content").style.display = "block";
+    }
+    
+    // Funzione per mostrare la pagina di login
+    function mostraLogin() {
+        document.getElementById("loginContainer").style.display = "block";
+        document.getElementById("appHeader").style.display = "none";
+        document.getElementById("content").style.display = "none";
+    }
+    
+    //Funzione epr fare il logout
+    function effettuaLogout() {
+        localStorage.removeItem("sessioneUtente");
+        mostraLogin();
+    }
+
+</script>   
+
+<!-- Script per caricare la data odierna o di ieri alla pressione pulsanti-->
+<script>
+ 
+      function Ieri() {
+            let yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            yesterday = yesterday.toISOString().split('T')[0];
+            document.getElementById("dataInizio").value = yesterday;
+        };
+
+       function Oggi() {
+            let today = new Date().toISOString().split('T')[0]; 
+            document.getElementById("dataInizio").value = today;
+        };
+
+
+        function IeriDip() {
+            let yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            yesterday = yesterday.toISOString().split('T')[0];
+            document.getElementById("dataInizioDip").value = yesterday;
+        };
+
+       function OggiDip() {
+            let today = new Date().toISOString().split('T')[0]; 
+            document.getElementById("dataInizioDip").value = today;
+        };
+
+</script>
+
+<!-- Script per la stampa della tabella ore commesse-->
+<script>
+    function printTable() {
+        let table = document.getElementById("tabellaDatiComm").cloneNode(true); // Clona la tabella
+        let newWin = window.open("", "", "width=800,height=600");
+
+        newWin.document.write(`
+            <html>
+            <head>
+                <title>Stampa Tabella</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        padding: 20px;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 20px;
+                        border: 2px solid black; /* Bordo principale della tabella */
+                    }
+                    th, td {
+                        border: 1px solid black;
+                        padding: 8px;
+                        text-align: left;
+                    }
+                    th {
+                        background-color: #f2f2f2;
+                        font-weight: bold;
+                    }
+                    @media print {
+                        body { 
+                            font-size: 14px; 
+                        }
+                        table, th, td {
+                            border: 1px solid black !important; /* Forza i bordi in stampa */
+                            border-collapse: collapse;
+                        }
+                        th {
+                           background-color: #f2f2f2 !important;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <h3>Tabella Dati</h3>
+                <table>${table.innerHTML}</table> <!-- Forza l'inserimento dell'intera tabella -->
+            </body>
+            </html>
+        `);
+
+        newWin.document.close();
+        newWin.focus();
+        setTimeout(() => {
+            newWin.print();
+            newWin.close();
+        }, 500);
+    };
+</script>
+
+<!-- Script per caricamento dati della tabella ore commesse-->
+<script>
+    async function caricaDati() {
+        document.getElementById('tabellaDati').style.visibility ='hidden';
+        document.getElementById("Risultato").value = "";
+        const dipendentiSelezionati = Array.from(document.getElementById('dipendenti').selectedOptions).map(option => option.value);
+        const dataInizio = document.getElementById('dataInizio').value;
+        const dataFine = document.getElementById('dataFine').value;
+        const cliente = document.getElementById('cliente').value;
+        const commessa = document.getElementById('commessa').value;
+        // Recupera la sessione utente salvata
+        const sessione = localStorage.getItem("sessioneUtente");
+
+        // Verifica che esista
+        if (!sessione) {
+            console.error("Errore: Nessuna sessione trovata. Effettua il login.");
+            alert("Sessione scaduta. Effettua nuovamente il login.");
+        return;
+        }
+
+        // Converte la stringa JSON in un oggetto
+        const sessioneUtente = JSON.parse(sessione);
+
+        // Estrai il token
+        const token = sessioneUtente.token;
+
+        if (!token) {
+            console.error("Errore: Nessun token presente nella sessione.");
+            alert("Errore di autenticazione. Effettua di nuovo il login.");
+        return;
+        }
+        try {
+            const response = await fetch(URLWorker + "/datiCommesse", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' ,"Authorization": `Bearer ${token}`},
+                body: JSON.stringify({ dipendenti: dipendentiSelezionati, dataInizio, dataFine, cliente, commessa })
+            });
+            //se va male, viene mostrato errore
+            if (!response.ok) {
+                throw new Error(`Errore HTTP: ${response.status}`);
+            }else {
+                //Con esito positivo viene comunicato e reinizializzati i dati e la pagina
+                document.getElementById("Risultato").value = "Dati caricati correttamente";
+            }
+            document.getElementById('tabellaDati').style.visibility ='visible';
+            const dati = await response.json();
+            const tabella = document.getElementById('tabellaDati');
+                        
+            tabella.innerHTML = ``;
+
+            dati.forEach(d => {
+                tabella.innerHTML += `
+                    <tr>
+                        <td>${formatData(d.Data)}</td>
+                        <td>${d.Cliente}</td>
+                        <td>${d.Commessa}</td>
+                        <td>${d.LavoroSvolto}</td>
+                        <td>${d.Ore}</td>
+                        <td>${d.NomeDipendente}</td>
+                        <td><input type="checkbox" class="row-checkbox" value="${d.id}"></td>
+                    </tr>
+                `;
+            });
+        } catch (error) {
+            console.error("Errore durante la richiesta:", error.message);
+            document.getElementById("Risultato").value = "Autorizzazione insufficiente";
+        }
+    }
+
+    // Parte di script per verificare i dipendenti selezionati nella check box
+    document.addEventListener("DOMContentLoaded", function () {
+        let dipSel = document.getElementById("dipendenti");
+        if (dipSel){
+            const dipendentiSelect = document.getElementById("dipendenti");
+
+            dipendentiSelect.addEventListener("change", function () {
+            let selectedValues = Array.from(dipendentiSelect.selectedOptions).map(opt => opt.value);
+
+            // Se "Tutti" è selezionato, rimuove le altre selezioni
+            if (selectedValues.includes("tutti")) {
+                dipendentiSelect.querySelectorAll("option").forEach(opt => {
+                    if (opt.value !== "tutti") {
+                        opt.selected = false;
+                    }
+                });
+            }
+            // Se viene selezionato almeno un altro dipendente, "Tutti" viene deselezionato
+            else if (selectedValues.length > 0) {
+                dipendentiSelect.querySelector('option[value="tutti"]').selected = false;
+            }
+    
+            });
+        }
+    });
+
+    function toggleSelectAll() {
+        const selectAllCheckbox = document.getElementById("selectAll");
+        const rowCheckboxes = document.querySelectorAll(".row-checkbox");
+    
+        // Se il checkbox globale è selezionato, seleziona tutte le righe
+        rowCheckboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+    }
+</script>
+
+<!-- Script per eliminare dal database le linee delle ore commesse selezionate-->
+<script>
+    async function eliminaSelezionati() {
+        const selectedIds = Array.from(document.querySelectorAll(".row-checkbox:checked"))
+        .map(checkbox => checkbox.value);
+
+        if (selectedIds.length === 0) {
+            alert("Seleziona almeno una riga da eliminare!");
+            return;
+        }
+        // Recupera la sessione utente salvata
+        const sessione = localStorage.getItem("sessioneUtente");
+
+        // Verifica che esista
+        if (!sessione) {
+            console.error("Errore: Nessuna sessione trovata. Effettua il login.");
+            alert("Sessione scaduta. Effettua nuovamente il login.");
+            return;
+        }
+
+        // Converte la stringa JSON in un oggetto
+        const sessioneUtente = JSON.parse(sessione);
+
+        // Estrai il token
+        const token = sessioneUtente.token;
+
+        if (!token) {
+            console.error("Errore: Nessun token presente nella sessione.");
+            alert("Errore di autenticazione. Effettua di nuovo il login.");
+            return;
+        }
+        //Richiema la funzione per eliminare i dati selezionati dalla tabella OreCommesse
+        try {
+            const response = await fetch(URLWorker + "/eliminaDati", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' ,"Authorization": `Bearer ${token}`},
+                body: JSON.stringify({ ids: selectedIds })
+            });
+            console.log("Response status:", response.status);
+
+            const textResponse = await response.text(); // Legge la risposta dal server
+            console.log("Response body:", textResponse);
+
+            if (response.ok) {
+                document.getElementById("Risultato").value = "Dati eliminati correttamente";
+                caricaDati(); // Ricarica la tabella per aggiornare i dati
+            } else {
+                alert("Errore nella cancellazione!");
+            }
+        } catch (error) {
+            console.error("Errore durante la richiesta:", error.message);
+            document.getElementById("Risultato").value = "Autorizzazione insufficiente"; //Questa operazione si può fare solo con autenticazione avanzata
+        }
+    }
+</script>
+
+<!-- Script per legare i nomi dei dipendenti agli ID-->
+<script>
+    function nomiDip(ID) {
+        switch (ID) {
+            case '1001':
+                return 'Leonardo Bejan';
+            case '1002':
+                return 'Enrico Bertone';
+            case '1003':
+                return 'Emanuele Bono';
+            case '1004':
+                return 'Stefano Bruno';
+            case '1005':
+                return 'Davide Canetto';
+            case '1006':
+                return 'Marco Carbonari';
+            case '1007':
+                return 'Piergiuseppe Cinieri';
+            case '1008':
+                return 'Alessandro Eandi';
+            case '1009':
+                return 'Paolo Eandi';
+            case '1010':
+                return 'Roberto Eandi';
+            case '1011':
+                return 'Simone Eandi';
+            case '1012':
+                return 'Barra Fall';
+            case '1013':
+                return 'Carlo Fontana';
+            case '1014':
+                return 'Daniela Fontana';
+            case '1015':
+                return 'Giorgio Milanolo';
+            case '1016':
+                return 'Tommasino Panero';
+            case '1017':
+                return 'Danilo Peila';
+            case '1018':
+                return 'Mattia Salvador';
+            case '1019':
+                return 'Mauro Salvador';
+            case '1020':
+                return 'Walter Salvador';
+            case '1021':
+                return 'Federico Vianzino';
+            case '1022':
+                return 'Roberto Parenti';
+            case '1023':
+                return 'Ospite_1';
+            case '1024':
+                return 'Ospite_2';
+            case '1025':
+                return 'Ospite_3';
+            case '1026':
+                return 'Ospite_4';
+            case '1027':
+                return 'Ospite_5';
+            case '1028':
+                return 'Ospite_6';
+            case '1029':
+                return 'Ospite_7';
+            case '1030':
+                return 'Ospite_8';
+            case '1031':
+                return 'Ospite_9';
+            case '1032':
+                return 'Ospite_10';
+            case '1033':
+                return 'Ospite_11';
+            case '1034':
+                return 'Ospite_12';
+            case '1035':
+                return 'Ospite_13';
+            case '1036':
+                return 'Ospite_14';
+            case '1037':
+                return 'Ospite_15';
+            case '1038':
+                return 'Ospite_16';
+            case '1039':
+                return 'Ospite_17';
+            case '1040':
+                return 'Ospite_18';
+            case 'Data':
+                return 'Data';    
+        }
+    }
+</script>
+
+<!-- Script per caricamento dati della tabella ore dipendenti-->
+<script>
+//Caricamento dati ore dipendenti
+    async function caricaDatiDip() {
+        const dataInizio = document.getElementById('dataInizioDip').value;
+        const dataFine = document.getElementById('dataFineDip').value;
+
+        if (!dataInizio) {
+            alert("Inserire una data di inizio ricerca");
+            return;
+        }
+
+        document.getElementById("RisultatoDip").value = "Caricamento...";
+        document.getElementById('tabellaDatiDip').style.visibility ='hidden';
+
+        const sessione = localStorage.getItem("sessioneUtente");
+        if (!sessione) {
+            alert("Sessione scaduta. Effettua nuovamente il login.");
+            return;
+        }
+        const sessioneUtente = JSON.parse(sessione);
+        const token = sessioneUtente.token;
+  
+        if (!token) {
+            alert("Errore di autenticazione. Effettua di nuovo il login.");
+            return;
+        }  
+        
+        // Recupera la selezione dipendenti (es. da un elemento <select multiple>)
+        const dipendenti = Array.from(document.getElementById('dipendentiDip').selectedOptions).map(opt => opt.value);
+        try {
+            const responseDip = await fetch(URLWorker + "/oreDipendenti", {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ dataInizio, dataFine, dipendenti })
+            });
+
+            if (!responseDip.ok) {
+                const errorText = await responseDip.text();
+                throw new Error(`Errore HTTP: ${responseDip.status} - ${errorText}`);
+            }
+
+            const datiDip = await responseDip.json();
+            console.log("Risposta completa:", JSON.stringify(datiDip, null, 2));
+            document.getElementById("RisultatoDip").value = "Dati caricati correttamente";
+
+            // Costruisci la tabella
+            const tabellaDip = document.getElementById('tabellaDatiDip');
+            // Se il risultato ha dati, possiamo generare la tabella dinamicamente
+            if (datiDip && Array.isArray(datiDip) && datiDip.length > 0) {
+                let headerRow = "<tr>";
+    
+                // Forziamo l'ordine delle chiavi: prima "Data", poi il resto
+                let keys = Object.keys(datiDip[0]);
+                // Filtra fuori le colonne da escludere (1026 - 1040)
+                const colonneEscluse = Array.from({ length: 1040 - 1026 + 1 }, (_, i) => (1026 + i).toString());
+                keys = ['Data', ...keys.filter(k => k !== 'Data' && !colonneEscluse.includes(k))];
+
+                keys.forEach(key => {
+                    let Name = nomiDip(key);
+                    headerRow += `<th>${Name}</th>`;
+                });
+                headerRow += "</tr>";
+                tabellaDip.innerHTML = headerRow;
+
+                datiDip.forEach(riga => {
+                    let row = "<tr>";
+                    keys.forEach(key => {
+                        let valore = riga[key];
+
+                        if (key === 'Data' && valore) {
+                        valore = formatData(valore);
+                        }
+
+                        row += `<td>${valore ?? '-'}</td>`;
+                    });
+                    row += "</tr>";
+                    tabellaDip.innerHTML += row;
+                });
+                document.getElementById('tabellaDatiDip').style.visibility ='visible';
+
+            } else {
+                tabellaDip.innerHTML = "<tr><td colspan='3'>Nessun dato disponibile</td></tr>";
+                document.getElementById("RisultatoDip").value = "Nessun dato trovato";
+            }
+        } catch (error) {
+            console.error("Errore nel caricamento dati:", error);
+            document.getElementById("RisultatoDip").value = "Autorizzazione insufficiente";
+        }
+    }
+</script>
+
+<!-- Script per caricamento dati ore dipendenti per modifica-->
+<script>
+//Caricamento dati ore dipendenti per modifica
+    async function caricaDatiMod() {
+        document.getElementById("risultatoModDip").value = "";
+        const dataSel = document.getElementById('dataSelMod').value;
+        const dipSelect = document.getElementById('dipendentiMod');
+        const dipendente = dipSelect.value; // singola selezione
+
+        //Se mancano il dipendente selezionato o la data: eroore
+        if (!dataSel || !dipendente) {
+            alert("Seleziona un dipendente e una data.");
+            return;
+        }
+
+        //Verifica utente
+        const sessione = localStorage.getItem("sessioneUtente");
+        if (!sessione) {
+            alert("Sessione scaduta. Effettua nuovamente il login.");
+            return;
+        }
+
+        const sessioneUtente = JSON.parse(sessione);
+        const token = sessioneUtente.token;
+
+        // Lancio della chiamata al backend con la funzione oreDipendentiMod per caricare i dati del dipendente selezionato
+        try {
+            const response = await fetch(URLWorker + "/oreDipendenteMod", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    userId: dipendente,
+                    data: dataSel
+                })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Errore HTTP: ${response.status} - ${errorText}`);
+            }
+
+            const risultato = await response.json(); // { ore: X }
+            // Se la risposta è ok, copia i dati della risposta nelle variabili del lato destro per la modifica
+            document.getElementById("modDipendente").value = nomiDip(dipendente);
+            document.getElementById("idModDipendente").value = dipendente;
+            document.getElementById("dataMod").value = formatData(dataSel);
+            document.getElementById("oreMod").value = risultato.ore ?? 0;
+
+        } catch (error) {
+            console.error("Errore nel caricamento singolo:", error);
+            alert("Errore durante il caricamento delle ore.");
+            document.getElementById("modDipendente").value = nomiDip(dipendente);
+            document.getElementById("idModDipendente").value = dipendente;
+            document.getElementById("dataMod").value = formatData(dataSel);
+            document.getElementById("oreMod").value = 0;
+        }
+    }
+</script>
+
+<!-- Script per la modifica dati ore dipendenti -->
+<script>
+    async function modificaDatiDip() {
+        document.getElementById("risultatoModDip").value = "";
+        const sessione = localStorage.getItem("sessioneUtente");
+        if (!sessione) {
+            alert("Sessione scaduta. Effettua nuovamente il login.");
+            return;
+        }
+
+        const sessioneUtente = JSON.parse(sessione);
+        const token = sessioneUtente.token;
+        const userId = sessioneUtente.id;
+        const username = sessioneUtente.username;
+
+        if (!token || !userId) {
+            alert("Errore di autenticazione. Effettua di nuovo il login.");
+            return;
+        }
+    
+        // Prendiamo la nuova quantità di ore da aggiornare nel giorno scelto
+        const dipendente =  document.getElementById("modDipendente").value;
+        const idDipendente =  document.getElementById("idModDipendente").value;
+        const inputData = document.getElementById('dataMod').value;
+        const oreAttuali = parseFloat(document.getElementById('oreMod').value);
+        const nuoveOre = parseFloat(document.getElementById('modOre').value);
+
+        //Verifica presenza data, dipendente e ore valide
+        if (!inputData || !dipendente || isNaN(nuoveOre)) {
+            alert("Inserire una data e ore valide.");
+            return;
+        }
+        // Richiesta conferma utente
+        const conferma = confirm(`Confermi di voler modificare le ore di ${dipendente} del giorno ${inputData}? Ore attuali: ${oreAttuali} Ore aggiornate: ${nuoveOre}`);
+        const [giorno, mese, anno] = inputData.split("-");
+        const nuovaData = `${anno}-${mese}-${giorno}`;
+        if (!conferma) return;
+    
+        //Richiesta al backend della funzione modificaOre
+        try {
+            const response = await fetch(URLWorker + "/modificaOre", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ data: nuovaData, ore: nuoveOre, userId: idDipendente })
+            });
+
+            const text = await response.text();
+
+            if (!response.ok) {
+                console.error("Errore HTTP:", response.status, text);
+                alert("❌ Errore nell'aggiornamento delle ore: " + text);
+                return;
+            } else {
+                document.getElementById('dipendentiMod').value = idDipendente;
+                caricaDatiMod()
+            }
+    
+            document.getElementById("risultatoModDip").value = "Dati modificati";
+            //mostraNotifica("✅ " + text);
+        } catch (err) {
+            console.error("Errore aggiornamento:", err);
+            alert("Errore nell'aggiornamento delle ore.");
+        }
+    }
+</script>
+
+<!-- Script per caricamento dati della tabella Ore Commesse Caricate (quelle totali) -->
+<script>
+    async function caricaDatiCommesseCaric() {
+        document.getElementById('tabellaDati').style.visibility ='hidden';
+        document.getElementById("Risultato").value = "";
+        const dipendentiSelezionati = Array.from(document.getElementById('dipendenti').selectedOptions).map(option => option.value);
+        const dataInizio = document.getElementById('dataInizio').value;
+        const dataFine = document.getElementById('dataFine').value;
+        const cliente = document.getElementById('cliente').value;
+        const commessa = document.getElementById('commessa').value;
+        // Recupera la sessione utente salvata
+        const sessione = localStorage.getItem("sessioneUtente");
+
+        // Verifica che esista
+        if (!sessione) {
+            console.error("Errore: Nessuna sessione trovata. Effettua il login.");
+            alert("Sessione scaduta. Effettua nuovamente il login.");
+        return;
+        }
+
+        // Converte la stringa JSON in un oggetto
+        const sessioneUtente = JSON.parse(sessione);
+
+        // Estrai il token
+        const token = sessioneUtente.token;
+
+        if (!token) {
+            console.error("Errore: Nessun token presente nella sessione.");
+            alert("Errore di autenticazione. Effettua di nuovo il login.");
+            return;
+        }
+
+        try {
+            const response = await fetch(URLWorker + "/datiCommCaricTot", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' ,"Authorization": `Bearer ${token}`},
+                body: JSON.stringify({ dipendenti: dipendentiSelezionati, dataInizio, dataFine, cliente, commessa })
+            });
+            //se va male, viene mostrato errore
+            if (!response.ok) {
+                throw new Error(`Errore HTTP: ${response.status}`);
+            }else {
+                //Con esito positivo viene comunicato e reinizializzati i dati e la pagina
+                document.getElementById("Risultato").value = "Dati caricati correttamente";
+            }
+            document.getElementById('tabellaDati').style.visibility ='visible';
+            const dati = await response.json();
+            const tabella = document.getElementById('tabellaDati');
+                        
+            tabella.innerHTML = ``;
+
+            dati.forEach(d => {
+                tabella.innerHTML += `
+                <tr>
+                    <td>${formatData(d.Data)}</td>
+                    <td>${d.Cliente}</td>
+                    <td>${d.Commessa}</td>
+                    <td>${d.LavoroSvolto}</td>
+                    <td>${d.Ore}</td>
+                    <td>${d.NomeDipendente}</td>
+                </tr>
+                `;
+            });
+        } catch (error) {
+            console.error("Errore durante la richiesta:", error.message);
+            document.getElementById("Risultato").value = "Autorizzazione insufficiente";
+        }
+    }
+
+    // Parte di script per verificare i dipendenti selezionati nella check box
+    document.addEventListener("DOMContentLoaded", function () {
+        let dipSel = document.getElementById("dipendenti");
+        if (dipSel){
+            const dipendentiSelect = document.getElementById("dipendenti");
+
+            dipendentiSelect.addEventListener("change", function () {
+                let selectedValues = Array.from(dipendentiSelect.selectedOptions).map(opt => opt.value);
+
+                // Se "Tutti" è selezionato, rimuove le altre selezioni
+                if (selectedValues.includes("tutti")) {
+                    dipendentiSelect.querySelectorAll("option").forEach(opt => {
+                        if (opt.value !== "tutti") {
+                            opt.selected = false;
+                        }
+                    });
+                }
+                // Se viene selezionato almeno un altro dipendente, "Tutti" viene deselezionato
+                else if (selectedValues.length > 0) {
+                    dipendentiSelect.querySelector('option[value="tutti"]').selected = false;
+                }
+    
+            });
+        }   
+    });
+
+    function toggleSelectAll() {
+        const selectAllCheckbox = document.getElementById("selectAll");
+        const rowCheckboxes = document.querySelectorAll(".row-checkbox");
+    
+        // Se il checkbox globale è selezionato, seleziona tutte le righe
+        rowCheckboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+    }
+</script>
+
+<!-- Script per la verifica sessione all'avvio-->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        verificaSessione();
+    });    
+</script>
+</body>
+</html>
+
+
