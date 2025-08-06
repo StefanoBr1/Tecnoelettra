@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Pagine</title>
+    <style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    text-align: center;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 0px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; /* Permette lo scrolling orizzontale se necessario */
+    display: flex; 
+    align-items: center;
+}
+
+/* Stile textarea */
+#myTextarea {
+        font-family: monospace;
+        width: 100%;
+        border: 1px solid #ccc;
+        padding: 8px;
+        font-size: 14px;
+        overflow: hidden;
+        resize: none; /* Evita il ridimensionamento manuale */
+        min-height: 20px;
+    }
+
+/* Bottoni */
+button {
+    width: auto;
+    /*min-width: 100px;*/
+    max-width: 250px; /* Impedisce ai pulsanti di essere troppo larghi */
+    font-size: 16px;
+    padding: 10px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: #0056b3;
+}
+#User {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    pointer-events: none;
+    outline: none
+}
+
+th, td {
+    font-size: 14px;
+    padding: 8px;
+}
+
+input {
+    font-size: 14px;
+}
+
+button {
+    font-size: 14px;
+    padding: 8px;
+}
+
+body {
+    padding-top: 0px; /* Per evitare che il contenuto venga coperto dalla barra */
+}
+
+/* HEADER */
+#appHeader {
+    background: #f8f9fa;
+    padding: 10px 20px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    box-sizing: border-box; /* Aggiunto per evitare overflow */
+}
+
+/* Barra superiore (top-bar) */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Aggiungi questo per gestire la larghezza della barra */
+    padding-bottom: 5px; /* Ridurre lo spazio sotto la top-bar */
+}
+
+#User {
+    font-weight: bold;
+    font-size: 20px; /* Aumenta la dimensione del testo per l'utente */
+    user-select: none;
+}
+
+/* Bottoni di logout */
+#logoutBtn {
+    background: rgb(95, 95, 95);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px; /* Ridurre la dimensione del bottone logout */
+}
+
+
+/* Ottimizzazione per schermi mobili */
+@media screen and (max-width: 768px) {
+    #appHeader {
+        padding: 10px 15px; /* Ridurre il padding per mobile */
+    }
+
+    .top-bar {
+        padding-bottom: 0px; /* Ridurre lo spazio sotto la top-bar su mobile */
+    }
+
+}
+
+
+/* CONTENUTO PRINCIPALE */
+main {
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 0px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; /* Permette lo scrolling orizzontale se necessario */
+    display: flex; 
+    align-items: center;
+    
+}
+
+
+input, textarea {
+    width: 100%;
+    font-size: large;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+textarea {
+    height: 100px; /* Impostato per adattarsi alla dimensione */
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#myTextarea {
+        font-family: monospace;
+        width: 100%;
+        border: 1px solid #ccc;
+        padding: 8px;
+        font-size: 14px;
+        overflow: hidden;
+        resize: none; /* Evita il ridimensionamento manuale */
+        min-height: 20px;
+    }
+    </style>
+</head>
+<body>
+
+<!-- Form per il login (visibile solo quando changePassword è true) -->
+<div id="loginContainer" class="container">
+    
+    <img src="https://raw.githubusercontent.com/StefanoBr1/Tecnoelettra/refs/heads/main/Tecnoelettra_1..bmp" alt="Descrizione" width="300">
+        <h1>Tecnoelettra</h1>
+        <h2>Accedi</h2>
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Inserisci username">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Inserisci password">
+        </div>
+        <button onclick="effettuaLogin()">Login</button>
+        <p id="loginMessage" style="color: red;"></p>
+</div>
+
+<!-- Form di Cambio Password (visibile solo quando changePassword è true) -->
+<div id="changePasswordContainer" style="display: none;">
+    <h3>Cambia la tua password</h3>
+    <input type="text" id="changePasswordUsername" placeholder="Username" readonly />
+    <input type="password" id="newPassword" placeholder="Nuova password" />
+    <input type="password" id="confirmPassword" placeholder="Conferma la nuova password" />
+    <button onclick="cambiaPassword()">Cambia password</button>
+    <p id="changePasswordMessage"></p>
+</div>
+
+<!-- Header, parte fissa in alto -->
+<header id="appHeader">
+    <div class="top-bar">
+        <img src="https://raw.githubusercontent.com/StefanoBr1/Tecnoelettra/refs/heads/main/Tecnoelettra_1..bmp" alt="Descrizione" width="20%">
+        <div id="User"></div>
+        <button id="logoutBtn" onclick="effettuaLogout()">Logout</button>
+    </div>
+</header>
+
+<main id="content">
+    <!-- Qui verrà caricato il contenuto della pagina selezionata -->
+</main>
+
+<!-- Funzione per il cambio pagina -->
+<script>
+    // Funzione per cambiare pagina dinamicamente
+    function cambiaPagina(pagina) {
+        let content = document.getElementById("content");
+
+        if (pagina === "modAbilita") {
+            //Contenuto della pagina visualizzazione commesse
+            content.innerHTML = `
+               <div id="statoEnblVar"></div>
+    
+              <button id= "setEnblBtn" onclick="setEnblComm()">Abilita</button>
+              <button id= "resetEnblBtn" onclick="resetEnblComm()">Disabilita</button>
+            `;
+            checkEnbl();           
+        }};
+
+</script>
+
+<!-- Funzione per la verifica dell'abilitazione all'utilizzo della tabella OreCommesseCaricate-->
+<script>
+    async function checkEnbl(){
+        //Chiama una funzione fetch per verificare sul backend se è abilitato l'utilizzo della tabella OreCommesseLocali
+    try {
+        const response = await fetch(URLWorker + "/check-variable", {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json"
+            }
+        });
+        const data = await response.json();
+
+        //Scrittura a video se l'accesso al database è abilitato o no
+        if (data.result) {
+            document.getElementById("statoEnblVar").textContent = "Accesso DB commesse abilitato";
+        } else {
+            document.getElementById("statoEnblVar").textContent = "Accesso DB commesse non abilitato";
+        }
+    } catch (err) {
+        console.error("Errore nella richiesta:", err);
+        alert("Errore nel server");
+    }
+    };
+  </script>
+
+<!-- Funzione per l'abilitazione all'utilizzo della tabella OreCommesseCaricatei-->
+<script>
+    async function setEnblComm(){
+        //Chiama una funzione fetch per abilitare l'utilizzo della tabella OreCommesseCaricate
+    try {
+        // Recupera la sessione utente salvata
+        const sessione = localStorage.getItem("sessioneUtente");
+
+        // Verifica che esista
+        if (!sessione) {
+            console.error("Errore: Nessuna sessione trovata. Effettua il login.");
+            alert("Sessione scaduta. Effettua nuovamente il login.");
+            return;
+        }
+
+        // Converte la stringa JSON in un oggetto
+        const sessioneUtente = JSON.parse(sessione);
+        // Estrai il token
+        const token = sessioneUtente.token;
+
+        if (!token) {
+            console.error("Errore: Nessun token presente nella sessione.");
+            alert("Errore di autenticazione. Effettua di nuovo il login.");
+            return;
+        }
+
+        const response = await fetch(URLWorker + "/setEnblComm", {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        });
+
+        const data = await response.json();
+        
+        checkEnbl()
+        
+    } catch (err) {
+        console.error("Errore nella richiesta:", err);
+        alert("Errore nel server");
+    }
+    };
+</script>
+
+<!-- Funzione per la disabilitazione all'utilizzo della tabella OreCommesseTotali-->
+<script>
+    async function resetEnblComm(){
+        //Chiama una funzione fetch per disabilitare l'utilizzo della tabella OreCommesseCaricate
+    try {
+        // Recupera la sessione utente salvata
+        const sessione = localStorage.getItem("sessioneUtente");
+
+        // Verifica che esista
+        if (!sessione) {
+            console.error("Errore: Nessuna sessione trovata. Effettua il login.");
+            alert("Sessione scaduta. Effettua nuovamente il login.");
+            return;
+        }
+
+        // Converte la stringa JSON in un oggetto
+        const sessioneUtente = JSON.parse(sessione);
+        // Estrai il token
+        const token = sessioneUtente.token;
+
+
+        if (!token) {
+            console.error("Errore: Nessun token presente nella sessione.");
+            alert("Errore di autenticazione. Effettua di nuovo il login.");
+            return;
+        }
+
+        const response = await fetch(URLWorker + "/resetEnblComm", {
+            method: 'POST',
+            headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+            },
+        });
+
+        const data = await response.json();
+        
+        checkEnbl()
+        
+    } catch (err) {
+        console.error("Errore nella richiesta:", err);
+        alert("Errore nel server");
+    }
+    };
+  </script>
+
+ <!-- Script per la definizione di variabili -->
+ <script>
+    let URLWorker = "https://login.tecnoelettra-stefano.workers.dev"
+</script>
+
+<!-- Script per effettuare il login - Con login ok, carica pagina Salva Ore-->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        verificaSessione();
+    }); 
+
+    async function effettuaLogin() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const loginMessage = document.getElementById("loginMessage");
+    
+        if (!username || !password) {
+            loginMessage.textContent = "Inserisci username e password";
+            return;
+        }
+    
+        try {
+            const response = await fetch(URLWorker + "/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+            });
+    
+            const data = await response.json();  // ✅ Legge il JSON una sola volta
+    
+            if (response.ok) {
+                if (data.changePassword) {
+                    mostraFormCambioPassword(username);
+                } else {
+                    //localStorage.setItem("token", data.token);
+                    localStorage.setItem("sessioneUtente", JSON.stringify({ username, token: data.token, id: data.id }));
+                    const sessione = JSON.parse(localStorage.getItem("sessioneUtente"));
+                    loginMessage.textContent = "";
+                    document.getElementById("User").textContent = sessione.username;
+                    cambiaPagina("modAbilita");
+                    mostraContenuto();
+                }
+            } else {
+                console.error("Errore:", data.error);
+                loginMessage.textContent = data.error || "Credenziali non valide";
+            }
+        } catch (error) {
+            console.error("Errore di login:", error);
+            loginMessage.textContent = "Errore di connessione";
+        }
+    }
+    
+    // Funzione per mostrare il modulo di cambio password
+    function mostraFormCambioPassword(username) {
+        // Mostra la sezione del cambio password
+        document.getElementById("loginContainer").style.display = "none";
+        document.getElementById("changePasswordContainer").style.display = "block"; // Aggiungi questa sezione al tuo HTML
+    
+        // Imposta il nome utente per il cambio password
+        document.getElementById("changePasswordUsername").value = username;
+    }
+    
+    // Funzione per cambiare la password
+    async function cambiaPassword() {
+        const username = document.getElementById("changePasswordUsername").value;
+        const newPassword = document.getElementById("newPassword").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const changePasswordMessage = document.getElementById("changePasswordMessage");
+    
+        if (!newPassword || !confirmPassword) {
+            changePasswordMessage.textContent = "Inserisci la nuova password e la conferma";
+            return;
+        }
+    
+        if (newPassword !== confirmPassword) {
+            changePasswordMessage.textContent = "Le password non corrispondono";
+            return;
+        }
+    
+        try {
+            const response = await fetch(URLWorker + "/change-password", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username, newPassword }),
+            });
+    
+            const data = await response.json();
+    
+            if (response.ok) {
+                changePasswordMessage.textContent = "Password cambiata con successo!";
+                // Puoi decidere cosa fare dopo, ad esempio tornare al login o reindirizzare l'utente
+                document.getElementById("changePasswordContainer").style.display = "none"; // Nascondi il form cambio password
+                document.getElementById("loginContainer").style.display = "block"; // Torna al login
+            } else {
+                changePasswordMessage.textContent = "Errore nel cambiamento della password";
+            }
+        } catch (error) {
+            console.error("Errore nel cambio password:", error);
+            changePasswordMessage.textContent = "Errore di connessione";
+        }
+    }
+        
+        function verificaSessione() {
+            const sessione = JSON.parse(localStorage.getItem("sessioneUtente"));
+        
+            if (sessione && sessione.token) {
+                document.getElementById("User").textContent = sessione.username;
+                cambiaPagina("salvaOre");
+                mostraContenuto();
+            } else {
+                mostraLogin();
+            }
+        }
+        
+        function mostraContenuto() {
+            document.getElementById("loginContainer").style.display = "none";
+            document.getElementById("appHeader").style.display = "block";
+            document.getElementById("content").style.display = "block";
+  
+        }
+        
+        function mostraLogin() {
+            document.getElementById("loginContainer").style.display = "block";
+            document.getElementById("appHeader").style.display = "none";
+            document.getElementById("content").style.display = "none";
+         }
+        
+        function effettuaLogout() {
+            localStorage.removeItem("sessioneUtente");
+            mostraLogin();
+        }
+</script>
+
+
+</body>
+</html>
+
